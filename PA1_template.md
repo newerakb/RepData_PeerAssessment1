@@ -1,40 +1,51 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
-```{r setoptions,include=FALSE}
-library(knitr)
-opts_chunk$set(echo=TRUE)
-```
+
 
 
 ## Loading and preprocessing the data
-```{r}
+
+```r
 stepData <- read.csv(unz("activity.zip","activity.csv"), header=TRUE, quote="\"")
 stepData$date <- as.Date(stepData$date, "%Y-%m-%d")
 ```
 
 
 ## What is mean total number of steps taken per day?
-```{r}
+
+```r
 dailyTotalSteps <- aggregate(steps ~ date, stepData, sum)
 hist(dailyTotalSteps$steps,
      main="Daily Step Frequency",
      xlab="Number of Steps",
      col="red")
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
+
+```r
 mean(dailyTotalSteps$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(dailyTotalSteps$steps)
 ```
 
-The mean number of steps each day is `r formatC(mean(dailyTotalSteps$steps), format="d", big.mark=',')`, while
-the median number of steps each day is `r formatC(median(dailyTotalSteps$steps), format="d", big.mark=',')`.
+```
+## [1] 10765
+```
+
+The mean number of steps each day is 10,766, while
+the median number of steps each day is 10,765.
 
 
 ## What is the average daily activity pattern?
-```{r}
+
+```r
 intervalMeanSteps <- aggregate(steps ~ interval, stepData, mean)
 plot(intervalMeanSteps$interval,
      intervalMeanSteps$steps,
@@ -42,26 +53,41 @@ plot(intervalMeanSteps$interval,
      main="Average Steps by Time",
      xlab="Time (24-hour clock)",
      ylab="Average Number of Steps")
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+
+```r
 intervalMeanSteps[which.max(intervalMeanSteps$steps),1]
 ```
 
+```
+## [1] 835
+```
+
 The 5-minute interval with the highest average number of steps
-is `r intervalMeanSteps[which.max(intervalMeanSteps$steps),1]`.
+is 835.
 
 
 ## Imputing missing values
 
 First calculate the number of rows in the dataset with missing values.
-```{r}
+
+```r
 sum(is.na(stepData$steps))
 ```
 
-There are `r sum(is.na(stepData$steps))` rows in the dataset with missing Step values.
+```
+## [1] 2304
+```
+
+There are 2304 rows in the dataset with missing Step values.
 
 To impute a missing number of steps for a given interval, I will use the previously calculated
 average number of steps for that interval across all dates, and use that value in place of the missing value.
 
-```{r}
+
+```r
 # Combine main data set with summarized interval data
 stepDataImputed <- merge(stepData, intervalMeanSteps, by="interval")
 colnames(stepDataImputed)[2] <- "steps"
@@ -78,33 +104,52 @@ for(i in 1:length(stepDataImputed$steps)) {
 
 Now we'll look at an updated histogram of daily steps taken
 
-```{r}
+
+```r
 dailyTotalStepsImputed <- aggregate(steps ~ date, stepDataImputed, sum)
 hist(dailyTotalStepsImputed$steps,
      main="Daily Step Frequency",
      xlab="Number of Steps",
      col="red")
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png) 
+
+```r
 mean(dailyTotalStepsImputed$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(dailyTotalStepsImputed$steps)
 ```
 
+```
+## [1] 10766.19
+```
+
 The new mean number of steps each day is
-`r formatC(mean(dailyTotalStepsImputed$steps), format="d", big.mark=',')`,
+10,766,
 while the new median number of steps each day is
-`r formatC(median(dailyTotalStepsImputed$steps), format="d", big.mark=',')`.
+10,766.
 The mean and median were not noticably affected by this method of imputing missing values.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
 First we must determine whether each row is a weekday or weekend.
-```{r}
+
+```r
 stepDataImputed$dayType <- weekdays(stepDataImputed$date)
 stepDataImputed$dayType <- gsub("Saturday|Sunday","weekend",stepDataImputed$dayType)
 stepDataImputed$dayType <- gsub("Monday|Tuesday|Wednesday|Thursday|Friday","weekday",stepDataImputed$dayType)
 ```
 
 Now we summarize and plot the data.
-```{r}
+
+```r
 dayTypeSteps <- aggregate(stepDataImputed$steps,stepDataImputed[c(1,5)],mean)
 colnames(dayTypeSteps)[3] <- "steps"
 
@@ -116,3 +161,5 @@ xyplot(steps~interval | dayType,
        ylab = 'Number of Steps',
        layout = c(1,2))
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-8-1.png) 
