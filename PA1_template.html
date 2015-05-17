@@ -57,11 +57,13 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 
 <div id="loading-and-preprocessing-the-data" class="section level2">
 <h2>Loading and preprocessing the data</h2>
+<p>First we load the data and ensure the date fiels is properly parsed.</p>
 <pre class="r"><code>stepData &lt;- read.csv(unz(&quot;activity.zip&quot;,&quot;activity.csv&quot;), header=TRUE, quote=&quot;\&quot;&quot;)
 stepData$date &lt;- as.Date(stepData$date, &quot;%Y-%m-%d&quot;)</code></pre>
 </div>
 <div id="what-is-mean-total-number-of-steps-taken-per-day" class="section level2">
 <h2>What is mean total number of steps taken per day?</h2>
+<p>To calculate the average number of steps each day we must first find the total sum of steps for each day.</p>
 <pre class="r"><code>dailyTotalSteps &lt;- aggregate(steps ~ date, stepData, sum)
 hist(dailyTotalSteps$steps,
      main=&quot;Daily Step Frequency&quot;,
@@ -76,6 +78,7 @@ hist(dailyTotalSteps$steps,
 </div>
 <div id="what-is-the-average-daily-activity-pattern" class="section level2">
 <h2>What is the average daily activity pattern?</h2>
+<p>To analyze the pattern of daily activity, we must find the average number of steps for each 5-minute interval.</p>
 <pre class="r"><code>intervalMeanSteps &lt;- aggregate(steps ~ interval, stepData, mean)
 plot(intervalMeanSteps$interval,
      intervalMeanSteps$steps,

@@ -5,6 +5,8 @@
 
 ## Loading and preprocessing the data
 
+First we load the data and ensure the date fiels is properly parsed.
+
 ```r
 stepData <- read.csv(unz("activity.zip","activity.csv"), header=TRUE, quote="\"")
 stepData$date <- as.Date(stepData$date, "%Y-%m-%d")
@@ -12,6 +14,8 @@ stepData$date <- as.Date(stepData$date, "%Y-%m-%d")
 
 
 ## What is mean total number of steps taken per day?
+
+To calculate the average number of steps each day we must first find the total sum of steps for each day.
 
 ```r
 dailyTotalSteps <- aggregate(steps ~ date, stepData, sum)
@@ -44,6 +48,8 @@ the median number of steps each day is 10,765.
 
 
 ## What is the average daily activity pattern?
+
+To analyze the pattern of daily activity, we must find the average number of steps for each 5-minute interval.
 
 ```r
 intervalMeanSteps <- aggregate(steps ~ interval, stepData, mean)
